@@ -1,6 +1,6 @@
 import Database from 'better-sqlite3';
 
-export const db = new Database('messages.db');
+export const db = new Database('app_data.db');
 
 // USERS
 db.prepare(`
@@ -8,8 +8,8 @@ db.prepare(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     login TEXT UNIQUE,
     password TEXT,
-    isOnline INTEGER,
-    lastOnline text
+    isOnline INTEGER DEFAULT 0,
+    lastOnline TEXT DEFAULT ""
   )
 `).run();
 
