@@ -9,6 +9,7 @@ db.prepare(`
     login TEXT UNIQUE,
     password TEXT,
     isOnline INTEGER DEFAULT 0,
+    userPic text DEFAULT null,
     lastOnline TEXT DEFAULT ""
   )
 `).run();
@@ -17,15 +18,18 @@ db.prepare(`
 db.prepare(`
   CREATE TABLE IF NOT EXISTS chats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    lastMessage TEXT,
-    lastMessageTime TEXT,
+    type TEXT,
+    privateKey TEXT UNIQUE,
+    lastMessage TEXT DEFAULT null,
+    lastMessageTime TEXT DEFAULT null,
     createdAt TEXT
+
   )
 `).run();
 
-// CHAT PARTICIPANTS
+// CHAT MEMBERS
 db.prepare(`
-  CREATE TABLE IF NOT EXISTS chat_participants (
+  CREATE TABLE IF NOT EXISTS chat_members (
     chatId INTEGER,
     userId INTEGER
   )
@@ -37,7 +41,7 @@ db.prepare(`
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chatId INTEGER,
-    text TEXT,
+    text TEXT DEFAULT null,
     senderId INTEGER,
     createdAt TEXT
   )

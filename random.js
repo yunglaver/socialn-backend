@@ -9,3 +9,11 @@ export function randomNumber(length) {
 export function randomToken(length = 32) {
     return crypto.randomBytes(length).toString('hex');
 }
+
+export function hash(password) {
+    return crypto
+        .createHash('sha256')
+        .update(password)
+        .digest('hex');
+}
+

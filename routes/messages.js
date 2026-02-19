@@ -1,8 +1,9 @@
 import express from 'express';
 import { db } from '../db.js';
+import {authMiddleware} from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', authMiddleware, (req, res) => {
     const { chatId } = req.query;
     const messages = db
         .prepare(`
@@ -11,12 +12,17 @@ router.get('/', (req, res) => {
             WHERE chatId = ?
             ORDER BY createdAt ASC;
         `)
+
         .all(chatId);
     res.json(messages);
 });
 
-router.post('/', (req, res) => {
-    const { text, chatId, userId } = req.body;
+//WHERE chat_participants.userId = req.userId
+//AND chat_participants.chatId = ?
+
+router.post('/', authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const { text, chatId } = req.body;
     if (!text || !chatId || !userId) {
         return res.status(400).json({ error: 'Missing fields' });
     }

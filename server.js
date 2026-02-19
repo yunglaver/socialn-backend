@@ -2,9 +2,11 @@ import express from 'express';
 import cors from 'cors';
 
 import authRoutes from './routes/auth.js';
+import usersRoutes from './routes/users.js'
 import registerRoutes from "./routes/register.js";
 import messageRoutes from './routes/messages.js';
 import chatsRoutes from './routes/chats.js';
+import logoutRoutes from "./routes/logout.js";
 
 const app = express();
 
@@ -15,8 +17,10 @@ app.use(express.json());
 
 app.use('/auth', authRoutes);
 app.use('/register', registerRoutes);
+app.use('/users', usersRoutes);
 app.use('/messages', messageRoutes);
 app.use('/chats', chatsRoutes);
+app.use('/logout', logoutRoutes);
 
 
 app.listen(3000, () => {
