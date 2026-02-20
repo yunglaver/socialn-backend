@@ -13,15 +13,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-
-
 app.use('/auth', authRoutes);
 app.use('/register', registerRoutes);
 app.use('/users', usersRoutes);
 app.use('/messages', messageRoutes);
 app.use('/chats', chatsRoutes);
 app.use('/logout', logoutRoutes);
-
 
 app.listen(3000, () => {
     console.log('🚀 Backend running on http://localhost:3000');

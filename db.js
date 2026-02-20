@@ -20,8 +20,7 @@ db.prepare(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT,
     privateKey TEXT UNIQUE,
-    lastMessage TEXT DEFAULT null,
-    lastMessageTime TEXT DEFAULT null,
+    lastMessageId INTEGER DEFAULT null,
     createdAt TEXT
 
   )

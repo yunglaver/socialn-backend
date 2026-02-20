@@ -13,7 +13,6 @@ router.get('/', authMiddleware, (req, res) => {
     `);
     const otherUsers = users.all(currentUserId);
 
-
     res.json(otherUsers);
 });
 

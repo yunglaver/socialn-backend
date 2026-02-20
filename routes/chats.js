@@ -7,13 +7,17 @@ router.get('/', authMiddleware, (req, res) => {
     const userId = req.userId;
     const chats = db
         .prepare(`
-            SELECT chats.*
-            FROM chats
-                     JOIN chat_members
-                          ON chats.id = chat_members.chatId
-            WHERE chat_members.userId = ?
-        `)
-        .all(userId);
+                SELECT chats.*, messages.text as lastMessageText,
+                    messages.createdAt as lastMessageCreatedAt, users.login as chatName
+                    FROM chats
+                    JOIN chat_members as members
+                    ON chats.id = members.chatId and members.userId = ?
+                    left JOIN chat_members
+                    ON chats.id = chat_members.chatId and chat_members.userId != ?
+                    join messages on chats.lastMessageId = messages.id
+                    left join users on users.id = chat_members.userId;
+                `).all(userId, userId)
+
     res.json(chats);
 });
 

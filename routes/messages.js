@@ -40,6 +40,11 @@ router.post('/', authMiddleware, (req, res) => {
         createdAt,
     );
 
+    db.prepare(`
+    update chats
+    set lastMessageId = ?
+    where chats.id = ?;`).run(result.lastInsertRowid, chatId)
+
     const message = {
         id: result.lastInsertRowid,
         chatId: chatId,
