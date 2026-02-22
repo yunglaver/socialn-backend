@@ -38,6 +38,7 @@ router.post('/', async (req, res) => {
         );
         const userId = user.id
         const userLogin = user.login
+        const userPic = user.userPic
         db.prepare(`
             UPDATE users 
             SET isOnline = 1, lastOnline = ?

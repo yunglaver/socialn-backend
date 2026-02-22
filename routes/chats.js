@@ -5,18 +5,35 @@ const router = express.Router();
 
 router.get('/', authMiddleware, (req, res) => {
     const userId = req.userId;
+
     const chats = db
         .prepare(`
-                SELECT chats.*, messages.text as lastMessageText,
-                    messages.createdAt as lastMessageCreatedAt, users.login as chatName
-                    FROM chats
-                    JOIN chat_members as members
-                    ON chats.id = members.chatId and members.userId = ?
-                    left JOIN chat_members
-                    ON chats.id = chat_members.chatId and chat_members.userId != ?
-                    join messages on chats.lastMessageId = messages.id
-                    left join users on users.id = chat_members.userId;
-                `).all(userId, userId)
+            SELECT
+                chats.*,
+                messages.text AS lastMessageText,
+                messages.createdAt AS lastMessageCreatedAt,
+                u.login AS chatName,
+                u.isOnline AS isOnline,
+                u.userPic AS userPic
+            FROM chats
+
+                     JOIN chat_members AS m_current
+                          ON chats.id = m_current.chatId
+                              AND m_current.userId = ?
+
+                     LEFT JOIN chat_members AS m_other
+                               ON chats.id = m_other.chatId
+                                   AND m_other.userId != ?
+
+                     LEFT JOIN users AS u
+                               ON u.id = m_other.userId
+
+                     LEFT JOIN messages
+                               ON chats.lastMessageId = messages.id
+
+            ORDER BY messages.createdAt DESC
+        `)
+        .all(userId, userId);
 
     res.json(chats);
 });
