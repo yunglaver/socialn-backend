@@ -17,9 +17,6 @@ router.get('/', authMiddleware, (req, res) => {
     res.json(messages);
 });
 
-//WHERE chat_participants.userId = req.userId
-//AND chat_participants.chatId = ?
-
 router.post('/', authMiddleware, (req, res) => {
     const userId = req.userId;
     const { text, chatId } = req.body;

@@ -63,7 +63,6 @@ router.post(
 
             const userId = req.userId;
 
-            // генерируем все размеры
             await Promise.all(
                 Object.entries(SIZES).map(async ([key, size]) => {
 
@@ -82,7 +81,7 @@ router.post(
                 })
             );
 
-            // сохраняем базовый путь без размера
+
             const basePath = `/uploads/avatars/user_${userId}`;
 
             db.prepare(`

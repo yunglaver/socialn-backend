@@ -7,13 +7,13 @@ export function authMiddleware(req, res, next) {
         return res.status(401).json({ error: 'No token provided' });
     }
 
-    const token = authHeader.split(' ')[1]; // Bearer TOKEN
+    const token = authHeader.split(' ')[1];
 
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-        req.userId = decoded.userId; // сохраняем userId в request
-        next(); // пускаем дальше
+        req.userId = decoded.userId;
+        next();
 
     } catch (err) {
         return res.status(401).json({ error: 'Invalid or expired token' });

@@ -7,7 +7,7 @@ router.get('/', authMiddleware, (req, res) => {
     const currentUserId = req.userId;
 
     const users = db.prepare(`
-        SELECT id, login, isOnline, lastOnline, userPic
+        SELECT id, login, lastOnline, userPic
         FROM users
         WHERE id != ?
     `);

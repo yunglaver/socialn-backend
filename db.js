@@ -8,7 +8,6 @@ db.prepare(`
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     login TEXT UNIQUE,
     password TEXT,
-    isOnline INTEGER DEFAULT 0,
     userPic text DEFAULT null,
     lastOnline TEXT DEFAULT ""
   )
@@ -18,7 +17,9 @@ db.prepare(`
 db.prepare(`
   CREATE TABLE IF NOT EXISTS chats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    type TEXT,
+    type TEXT NOT NULL CHECK(type IN ('private','group')),
+    chatPic text DEFAULT null,
+    title text DEFAULT null,
     privateKey TEXT UNIQUE,
     lastMessageId INTEGER DEFAULT null,
     createdAt TEXT
@@ -27,11 +28,14 @@ db.prepare(`
 `).run();
 
 // CHAT MEMBERS
-db.prepare(`
-  CREATE TABLE IF NOT EXISTS chat_members (
-    chatId INTEGER,
-    userId INTEGER
-  )
+db.prepare(`CREATE TABLE IF NOT EXISTS chat_members (
+    chatId INTEGER NOT NULL,
+    userId INTEGER NOT NULL,
+    role TEXT DEFAULT 'member',
+    PRIMARY KEY (chatId, userId),
+    FOREIGN KEY (chatId) REFERENCES chats(id) ON DELETE CASCADE,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+    )
 `).run();
 
 
@@ -48,7 +52,7 @@ db.prepare(`
 
 
 
-/*  MUSIC
+
 db.prepare(`
   CREATE TABLE IF NOT EXISTS music (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -57,4 +61,4 @@ db.prepare(`
     uploaderId INTEGER,
     createdAt TEXT
   )
-`).run();*/
+`).run();

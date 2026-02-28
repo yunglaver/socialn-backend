@@ -7,9 +7,6 @@ dotenv.config();
 
 const router = express.Router();
 
-/* ===========================
-   LOGIN
-=========================== */
 router.post('/', async (req, res) => {
     const { login, password } = req.body;
 
@@ -41,7 +38,7 @@ router.post('/', async (req, res) => {
         const userPic = user.userPic
         db.prepare(`
             UPDATE users 
-            SET isOnline = 1, lastOnline = ?
+            SET lastOnline = ?
             WHERE id = ?
         `).run(new Date().toISOString(), user.id);
 
