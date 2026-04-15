@@ -22,7 +22,7 @@ db.prepare(`
     title text DEFAULT null,
     privateKey TEXT UNIQUE,
     lastMessageId INTEGER DEFAULT null,
-    createdAt TEXT
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
   )
 `).run();
@@ -38,7 +38,6 @@ db.prepare(`CREATE TABLE IF NOT EXISTS chat_members (
     )
 `).run();
 
-
 // MESSAGES
 db.prepare(`
   CREATE TABLE IF NOT EXISTS messages (
@@ -46,19 +45,33 @@ db.prepare(`
     chatId INTEGER,
     text TEXT DEFAULT null,
     senderId INTEGER,
-    createdAt TEXT
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
 `).run();
 
-
-
-
+// MUSIC
 db.prepare(`
   CREATE TABLE IF NOT EXISTS music (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
+    isPublic INTEGER DEFAULT 0,
     filename TEXT,
+    artistName TEXT,
+    songTitle TEXT,
     originalName TEXT,
+    duration REAL,
     uploaderId INTEGER,
-    createdAt TEXT
+    coverPic text DEFAULT null,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+  )
+`).run();
+
+// ADDED MUSIC
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS user_music (
+  userId INTEGER NOT NULL,
+  songId INTEGER NOT NULL,
+  createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (userId, songId),
+  FOREIGN KEY (songId) REFERENCES music(id) ON DELETE CASCADE
   )
 `).run();

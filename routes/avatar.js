@@ -9,10 +9,8 @@ import { fileURLToPath } from 'url';
 
 const router = express.Router();
 
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-
 
 const uploadDir = path.join(__dirname, '..', 'uploads', 'avatars');
 fs.mkdirSync(uploadDir, { recursive: true });
@@ -29,7 +27,6 @@ const upload = multer({
         }
     }
 });
-
 
 const SIZES = {
     sm: 64,
@@ -80,7 +77,6 @@ router.post(
                         .toFile(outputPath);
                 })
             );
-
 
             const basePath = `/uploads/avatars/user_${userId}`;
 

@@ -19,6 +19,7 @@ import usersRoutes from './routes/users.js';
 import registerRoutes from './routes/register.js';
 import messageRoutes from './routes/messages.js';
 import chatsRoutes from './routes/chats.js';
+import musicRoutes from './routes/music.js';
 import logoutRoutes from './routes/logout.js';
 import avatarRoutes from './routes/avatar.js';
 
@@ -30,6 +31,7 @@ app.use('/register', registerRoutes);
 app.use('/users', usersRoutes);
 app.use('/messages', messageRoutes);
 app.use('/chats', chatsRoutes);
+app.use('/music', musicRoutes);
 app.use('/logout', logoutRoutes);
 app.use('/avatar', avatarRoutes);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));

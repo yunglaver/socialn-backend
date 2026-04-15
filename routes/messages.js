@@ -25,16 +25,14 @@ router.post('/', authMiddleware, (req, res) => {
     }
 
     const senderId = userId
-    const createdAt = new Date().toISOString();
 
     const result = db.prepare(`
         INSERT INTO messages (chatId, text, senderId, createdAt)
-        VALUES (?, ?, ?, ?)
+        VALUES (?, ?, ?)
     `).run(
         chatId,
         text,
         senderId,
-        createdAt,
     );
 
     db.prepare(`

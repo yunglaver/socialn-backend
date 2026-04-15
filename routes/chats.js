@@ -67,27 +67,23 @@ router.post('/', authMiddleware, (req, res) => {
 
 
     const createChat = db.transaction(() => {
+        const chatInfo = db.prepare(`
+        INSERT INTO chats (type)
+        VALUES ('private')
+        RETURNING id, createdAt
+    `).get();
 
-        const createdAt = new Date().toISOString();
+        const chatId = chatInfo.id;
 
-        const result = db.prepare(`
-            INSERT INTO chats (type, createdAt)
-            VALUES ('private', ?)
-        `).run(createdAt);
+        const insertMember = db.prepare(`
+        INSERT INTO chat_members (chatId, userId)
+        VALUES (?, ?)
+    `);
 
-        const chatId = result.lastInsertRowid;
+        insertMember.run(chatId, currentUserId);
+        insertMember.run(chatId, receiverUserId);
 
-        db.prepare(`
-            INSERT INTO chat_members (chatId, userId)
-            VALUES (?, ?)
-        `).run(chatId, currentUserId);
-
-        db.prepare(`
-            INSERT INTO chat_members (chatId, userId)
-            VALUES (?, ?)
-        `).run(chatId, receiverUserId);
-
-        return { id: chatId, createdAt };
+        return chatInfo;
     });
 
     const newChat = createChat();

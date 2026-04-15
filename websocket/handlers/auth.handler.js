@@ -12,7 +12,7 @@ export function handleAuth(wss, ws, data) {
         ws.userId = decoded.userId;
 
         onlineUsers.set(ws.userId, ws);
-        console.log(onlineUsers)
+
         ws.send(JSON.stringify({ type: 'auth_success' }));
 
     } catch {
