@@ -122,7 +122,7 @@ router.get('/my', authMiddleware, (req, res) => {
                          LEFT JOIN user_music um
                                    ON m.id = um.songId AND um.userId = ?
                 WHERE um.userId = ? OR m.uploaderId = ?
-                ORDER BY m.createdAt DESC
+                ORDER BY m.id DESC
                 LIMIT ? OFFSET ?
             `)
             .all(userId, userId, userId, userId, limit, offset);
@@ -158,7 +158,7 @@ router.get('/all', authMiddleware, (req, res) => {
                          LEFT JOIN user_music um
                                    ON m.id = um.songId AND um.userId = ?
                 WHERE m.isPublic = true
-                ORDER BY m.createdAt DESC
+                ORDER BY m.id DESC
                 LIMIT ? OFFSET ?
             `)
             .all(userId, userId, limit, offset);

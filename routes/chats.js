@@ -6,12 +6,16 @@ const router = express.Router();
 router.get('/', authMiddleware, (req, res) => {
     const userId = req.userId;
 
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 20;
+    const offset = (page - 1) * limit;
+
     const chats = db
         .prepare(`
             SELECT
                 chats.*,
-                messages.text AS lastMessageText,
-                messages.createdAt AS lastMessageCreatedAt,
+                m.text AS lastMessageText,
+                m.createdAt AS lastMessageCreatedAt,
                 u.login AS chatName,
                 u.userPic AS userPic
             FROM chats
@@ -27,12 +31,21 @@ router.get('/', authMiddleware, (req, res) => {
                      LEFT JOIN users AS u
                                ON u.id = m_other.userId
 
-                     LEFT JOIN messages
-                               ON chats.lastMessageId = messages.id
+                     LEFT JOIN messages m
+                               ON m.id = (
+                                   SELECT id FROM messages
+                                   WHERE chatId = chats.id
+                                   ORDER BY createdAt DESC
+                                   LIMIT 1
+                               )
 
-            ORDER BY messages.createdAt ASC
+            ORDER BY
+                m.createdAt IS NULL,
+                m.createdAt DESC
+
+            LIMIT ? OFFSET ?
         `)
-        .all(userId, userId);
+        .all(userId, userId, limit, offset);
 
     res.json(chats);
 });

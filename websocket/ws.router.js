@@ -32,7 +32,7 @@ export function routeMessage(wss, ws, raw) {
             handleMessage(wss, ws, data);
             console.log(ws.userId, data)
             break;
-
+/*
         case 'typing':
             handleTyping(wss, ws, data);
             break;
@@ -40,7 +40,7 @@ export function routeMessage(wss, ws, raw) {
         case 'read':
             handleRead(wss, ws, data);
             break;
-
+*/
         default:
             ws.send(JSON.stringify({ type: 'error', error: 'Unknown type' }));
     }

@@ -12,7 +12,6 @@ export function handleJoinChat(wss, ws, data) {
 
     rooms.get(chatId).add(ws);
 
-
 }
 
 export function handleLeaveChat(wss, ws, data) {
