@@ -1,4 +1,5 @@
 /node_modules/
 /app_data.db
 /uploads/*
-/.idea/*.env
+/*.env
+.idea/
