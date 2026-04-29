@@ -1,10 +1,11 @@
 {
-    "name": "notes-backend",
+    "name": "socialn-backend",
     "version": "1.0.0",
     "main": "index.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "dev": "node server.js",
+        "dev": "node --watch server.js",
+        "start": "node server.js",
         "format": "prettier --write ."
     },
     "keywords": [],
@@ -22,7 +23,6 @@
         "multer": "^2.0.2",
         "music-metadata": "^11.12.3",
         "sharp": "^0.34.5",
-        "sqlite3": "^5.1.7",
         "uuid": "^13.0.0",
         "ws": "^8.19.0"
     },
