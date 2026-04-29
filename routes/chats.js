@@ -11,7 +11,8 @@ router.get('/', authMiddleware, (req, res) => {
     const offset = (page - 1) * limit;
 
     const chats = db
-        .prepare(`
+        .prepare(
+            `
             SELECT
                 chats.*,
                 m.text AS lastMessageText,
@@ -44,7 +45,8 @@ router.get('/', authMiddleware, (req, res) => {
                 m.createdAt DESC
 
             LIMIT ? OFFSET ?
-        `)
+        `
+        )
         .all(userId, userId, limit, offset);
 
     res.json(chats);
@@ -59,11 +61,14 @@ router.post('/', authMiddleware, (req, res) => {
     }
 
     if (receiverUserId === currentUserId) {
-        return res.status(400).json({ error: 'Cannot create chat with yourself' });
+        return res
+            .status(400)
+            .json({ error: 'Cannot create chat with yourself' });
     }
 
-
-    const existingChat = db.prepare(`
+    const existingChat = db
+        .prepare(
+            `
         SELECT c.id
         FROM chats c
         JOIN chat_members m1 
@@ -72,19 +77,24 @@ router.post('/', authMiddleware, (req, res) => {
             ON m2.chatId = c.id AND m2.userId = ?
         WHERE c.type = 'private'
         LIMIT 1
-    `).get(currentUserId, receiverUserId);
+    `
+        )
+        .get(currentUserId, receiverUserId);
 
     if (existingChat) {
         return res.json({ id: existingChat.id });
     }
 
-
     const createChat = db.transaction(() => {
-        const chatInfo = db.prepare(`
+        const chatInfo = db
+            .prepare(
+                `
         INSERT INTO chats (type)
         VALUES ('private')
         RETURNING id, createdAt
-    `).get();
+    `
+            )
+            .get();
 
         const chatId = chatInfo.id;
 
@@ -104,5 +114,4 @@ router.post('/', authMiddleware, (req, res) => {
     return res.json(newChat);
 });
 
-
-export default router
+export default router;

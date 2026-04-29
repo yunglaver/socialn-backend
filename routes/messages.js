@@ -1,19 +1,26 @@
 import express from 'express';
 import { db } from '../db.js';
-import {authMiddleware} from "../middlewares/auth.middleware.js";
+import { authMiddleware } from '../middlewares/auth.middleware.js';
 const router = express.Router();
 
 router.get('/', authMiddleware, (req, res) => {
     const { chatId } = req.query;
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 40;
+    const offset = (page - 1) * limit;
+
     const messages = db
-        .prepare(`
+        .prepare(
+            `
             SELECT *
             FROM messages
             WHERE chatId = ?
-            ORDER BY createdAt ASC;
-        `)
+            ORDER BY id DESC
+            LIMIT ? OFFSET ?
+        `
+        )
+        .all(chatId, limit, offset);
 
-        .all(chatId);
     res.json(messages);
 });
 
@@ -24,32 +31,33 @@ router.post('/', authMiddleware, (req, res) => {
         return res.status(400).json({ error: 'Missing fields' });
     }
 
-    const senderId = userId
+    const senderId = userId;
 
-    const result = db.prepare(`
+    const result = db
+        .prepare(
+            `
         INSERT INTO messages (chatId, text, senderId, createdAt)
         VALUES (?, ?, ?)
-    `).run(
-        chatId,
-        text,
-        senderId,
-    );
+    `
+        )
+        .run(chatId, text, senderId);
 
-    db.prepare(`
+    db.prepare(
+        `
     update chats
     set lastMessageId = ?
-    where chats.id = ?;`).run(result.lastInsertRowid, chatId)
+    where chats.id = ?;`
+    ).run(result.lastInsertRowid, chatId);
 
     const message = {
         id: result.lastInsertRowid,
         chatId: chatId,
         text: text,
         senderId: senderId,
-        createdAt: createdAt
-    }
+        createdAt: createdAt,
+    };
 
     res.json(message);
 });
-
 
 export default router;

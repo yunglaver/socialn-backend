@@ -1,14 +1,12 @@
 import { WebSocketServer } from 'ws';
 import { routeMessage } from './ws.router.js';
-import {handleDisconnect} from './handlers/presence.handler.js'
-
+import { handleDisconnect } from './handlers/presence.handler.js';
 
 export function initWebSocket(server) {
-
     const wss = new WebSocketServer({ server });
 
     wss.on('connection', (ws) => {
-        console.log('NEW CONNECTION')
+        console.log('NEW CONNECTION');
         ws.userId = null;
         ws.currentChatId = null;
 
@@ -19,7 +17,5 @@ export function initWebSocket(server) {
         ws.on('close', () => {
             handleDisconnect(wss, ws);
         });
-
     });
-
 }

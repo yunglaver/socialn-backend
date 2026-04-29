@@ -41,12 +41,10 @@ const server = http.createServer(app);
 initWebSocket(server);
 
 app.use((err, req, res, next) => {
-
     if (err instanceof multer.MulterError) {
-
         if (err.code === 'LIMIT_FILE_SIZE') {
             return res.status(400).json({
-                error: 'File too large. Max size is 10MB'
+                error: 'File too large. Max size is 10MB',
             });
         }
 

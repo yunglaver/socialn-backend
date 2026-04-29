@@ -3,7 +3,7 @@ import crypto from 'crypto';
 export function randomNumber(length) {
     const array = new Uint32Array(length);
     crypto.getRandomValues(array);
-    return Array.from(array, x => (x % 10)).join('');
+    return Array.from(array, (x) => x % 10).join('');
 }
 
 export function randomToken(length = 32) {
@@ -11,9 +11,5 @@ export function randomToken(length = 32) {
 }
 
 export function hash(password) {
-    return crypto
-        .createHash('sha256')
-        .update(password)
-        .digest('hex');
+    return crypto.createHash('sha256').update(password).digest('hex');
 }
-

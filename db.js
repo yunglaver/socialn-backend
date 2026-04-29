@@ -3,7 +3,8 @@ import Database from 'better-sqlite3';
 export const db = new Database('app_data.db');
 
 // USERS
-db.prepare(`
+db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     login TEXT UNIQUE,
@@ -11,10 +12,12 @@ db.prepare(`
     userPic text DEFAULT null,
     lastOnline TEXT DEFAULT ""
   )
-`).run();
+`
+).run();
 
 // CHATS
-db.prepare(`
+db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS chats (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     type TEXT NOT NULL CHECK(type IN ('private','group')),
@@ -25,10 +28,12 @@ db.prepare(`
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 
   )
-`).run();
+`
+).run();
 
 // CHAT MEMBERS
-db.prepare(`CREATE TABLE IF NOT EXISTS chat_members (
+db.prepare(
+    `CREATE TABLE IF NOT EXISTS chat_members (
     chatId INTEGER NOT NULL,
     userId INTEGER NOT NULL,
     role TEXT DEFAULT 'member',
@@ -36,10 +41,12 @@ db.prepare(`CREATE TABLE IF NOT EXISTS chat_members (
     FOREIGN KEY (chatId) REFERENCES chats(id) ON DELETE CASCADE,
     FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
     )
-`).run();
+`
+).run();
 
 // MESSAGES
-db.prepare(`
+db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS messages (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     chatId INTEGER,
@@ -47,10 +54,12 @@ db.prepare(`
     senderId INTEGER,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`
+).run();
 
 // MUSIC
-db.prepare(`
+db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS music (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     isPublic INTEGER DEFAULT 0,
@@ -63,10 +72,12 @@ db.prepare(`
     coverPic text DEFAULT null,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   )
-`).run();
+`
+).run();
 
 // ADDED MUSIC
-db.prepare(`
+db.prepare(
+    `
   CREATE TABLE IF NOT EXISTS user_music (
   userId INTEGER NOT NULL,
   songId INTEGER NOT NULL,
@@ -74,4 +85,5 @@ db.prepare(`
   PRIMARY KEY (userId, songId),
   FOREIGN KEY (songId) REFERENCES music(id) ON DELETE CASCADE
   )
-`).run();
+`
+).run();

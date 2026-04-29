@@ -3,7 +3,6 @@ import { handleMessage } from './handlers/message.handler.js';
 import { handleJoinChat, handleLeaveChat } from './handlers/chat.handler.js';
 
 export function routeMessage(wss, ws, raw) {
-
     let data;
 
     try {
@@ -14,7 +13,6 @@ export function routeMessage(wss, ws, raw) {
     }
 
     switch (data.type) {
-
         case 'auth':
             handleAuth(wss, ws, data);
             console.log('Auth received');
@@ -30,9 +28,9 @@ export function routeMessage(wss, ws, raw) {
 
         case 'message':
             handleMessage(wss, ws, data);
-            console.log(ws.userId, data)
+            console.log(ws.userId, data);
             break;
-/*
+        /*
         case 'typing':
             handleTyping(wss, ws, data);
             break;

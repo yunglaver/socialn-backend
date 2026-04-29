@@ -15,7 +15,6 @@ const __dirname = path.dirname(__filename);
 const uploadDir = path.join(__dirname, '..', 'uploads', 'avatars');
 fs.mkdirSync(uploadDir, { recursive: true });
 
-
 const upload = multer({
     storage: multer.memoryStorage(),
     limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
@@ -25,13 +24,13 @@ const upload = multer({
         } else {
             cb(new Error('Only image files allowed'));
         }
-    }
+    },
 });
 
 const SIZES = {
     sm: 64,
     md: 256,
-    original: null
+    original: null,
 };
 
 router.get('/', authMiddleware, (req, res) => {
@@ -46,56 +45,47 @@ router.get('/', authMiddleware, (req, res) => {
     return res.json(user);
 });
 
+router.post('/', authMiddleware, upload.single('photo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
 
-router.post(
-    '/',
-    authMiddleware,
-    upload.single('photo'),
-    async (req, res) => {
-        try {
+        const userId = req.userId;
 
-            if (!req.file) {
-                return res.status(400).json({ error: 'No file uploaded' });
-            }
+        await Promise.all(
+            Object.entries(SIZES).map(async ([key, size]) => {
+                const fileName = `user_${userId}_${key}.webp`;
+                const outputPath = path.join(uploadDir, fileName);
 
-            const userId = req.userId;
+                let pipeline = sharp(req.file.buffer);
 
-            await Promise.all(
-                Object.entries(SIZES).map(async ([key, size]) => {
+                if (size) {
+                    pipeline = pipeline.resize(size, size, { fit: 'cover' });
+                }
 
-                    const fileName = `user_${userId}_${key}.webp`;
-                    const outputPath = path.join(uploadDir, fileName);
+                await pipeline.webp({ quality: 80 }).toFile(outputPath);
+            })
+        );
 
-                    let pipeline = sharp(req.file.buffer);
+        const basePath = `/uploads/avatars/user_${userId}`;
 
-                    if (size) {
-                        pipeline = pipeline.resize(size, size, { fit: 'cover' });
-                    }
-
-                    await pipeline
-                        .webp({ quality: 80 })
-                        .toFile(outputPath);
-                })
-            );
-
-            const basePath = `/uploads/avatars/user_${userId}`;
-
-            db.prepare(`
+        db.prepare(
+            `
                 UPDATE users
                 SET userPic = ?
                 WHERE id = ?
-            `).run(basePath, userId);
+            `
+        ).run(basePath, userId);
 
-            return res.json({
-                success: true,
-                userPic: basePath
-            });
-
-        } catch (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Upload failed' });
-        }
+        return res.json({
+            success: true,
+            userPic: basePath,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'Upload failed' });
     }
-);
+});
 
 export default router;

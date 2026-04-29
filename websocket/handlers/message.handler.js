@@ -1,62 +1,70 @@
 import { db } from '../../db.js';
 import { rooms } from '../state/rooms.js';
-import {onlineUsers} from '../state/presence.js'
+import { onlineUsers } from '../state/presence.js';
 
 export function handleMessage(wss, ws, data) {
-
     if (!ws.userId) return;
 
     const createdAt = new Date().toISOString();
 
-    const result = db.prepare(`
+    const result = db
+        .prepare(
+            `
         INSERT INTO messages (chatId, text, senderId, createdAt)
         VALUES (?, ?, ?, ?)
-    `).run(data.chatId, data.text, ws.userId, createdAt);
+    `
+        )
+        .run(data.chatId, data.text, ws.userId, createdAt);
 
-    const members = db.
-    prepare(`
+    const members = db
+        .prepare(
+            `
     SELECT userId
     FROM chat_members
     WHERE chatId = ?
-    `).all(data.chatId);
+    `
+        )
+        .all(data.chatId);
 
     const newMessage = {
         id: result.lastInsertRowid,
         chatId: data.chatId,
         text: data.text,
         senderId: ws.userId,
-        createdAt
+        createdAt,
     };
 
-    db.prepare(`
+    db.prepare(
+        `
     update chats
     set lastMessageId = ?
     where chats.id = ?
-    `).run(result.lastInsertRowid, data.chatId)
+    `
+    ).run(result.lastInsertRowid, data.chatId);
 
     const room = rooms.get(data.chatId);
-    console.log(rooms)
+    console.log(rooms);
 
     if (room) {
-
-        room.forEach(client => {
+        room.forEach((client) => {
             if (client.readyState === 1) {
-                client.send(JSON.stringify({
-                    type: 'message',
-                    payload: newMessage
-                }))
-
+                client.send(
+                    JSON.stringify({
+                        type: 'message',
+                        payload: newMessage,
+                    })
+                );
             }
         });
     }
 
-
-    members.forEach(user => {
-
+    members.forEach((user) => {
         const socket = onlineUsers.get(user.userId);
         if (!socket) return;
 
-        const chat = db.prepare(`
+        const chat = db
+            .prepare(
+                `
         SELECT
             chats.id,
             messages.text AS lastMessageText,
@@ -75,17 +83,15 @@ export function handleMessage(wss, ws, data) {
         LEFT JOIN messages
             ON chats.lastMessageId = messages.id
         WHERE chats.id = ?
-    `).get(user.userId, user.userId, data.chatId);
+    `
+            )
+            .get(user.userId, user.userId, data.chatId);
 
-
-
-        socket.send(JSON.stringify({
-            type: 'chat_updated',
-            payload: chat
-        }));
+        socket.send(
+            JSON.stringify({
+                type: 'chat_updated',
+                payload: chat,
+            })
+        );
     });
-
-
-
 }
-

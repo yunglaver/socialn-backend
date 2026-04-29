@@ -1,8 +1,6 @@
 import { rooms } from '../state/rooms.js';
 
-
 export function handleJoinChat(wss, ws, data) {
-
     const chatId = data.chatId;
     ws.currentChatId = chatId;
 
@@ -11,11 +9,9 @@ export function handleJoinChat(wss, ws, data) {
     }
 
     rooms.get(chatId).add(ws);
-
 }
 
 export function handleLeaveChat(wss, ws, data) {
-
     const chatId = data.chatId;
 
     if (rooms.has(chatId)) {
@@ -24,4 +20,3 @@ export function handleLeaveChat(wss, ws, data) {
 
     ws.currentChatId = null;
 }
-
